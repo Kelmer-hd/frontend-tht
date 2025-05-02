@@ -1,0 +1,108 @@
+<!-- src/app/features/inventarios/dialogs/movimiento-tela-dialog/movimiento-tela-dialog.component.html -->
+<div class="fixed inset-0 z-50 overflow-auto bg-gray-500 bg-opacity-75 flex justify-center items-center">
+  <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full">
+    <div class="p-4 border-b border-gray-200">
+      <h3 class="text-lg font-semibold text-gray-900">Registrar Movimiento de Tela</h3>
+    </div>
+
+    <div class="p-4">
+      <div *ngIf="tela" class="mb-4 text-sm">
+        <p class="font-medium mb-1">Datos de la tela:</p>
+        <div class="grid grid-cols-2 gap-2">
+          <span><strong>Guía:</strong> {{tela.numGuia}}</span>
+          <span><strong>Partida:</strong> {{tela.partida}}</span>
+          <span><strong>Proveedor:</strong> {{tela.proveedor}}</span>
+          <span><strong>Stock:</strong> {{tela.stockReal}} kg</span>
+        </div>
+      </div>
+
+      <form *ngIf="movimientoForm" [formGroup]="movimientoForm" class="grid grid-cols-2 gap-4">
+
+
+        <div>
+          <label for="tipoMovimiento" class="block text-sm font-medium text-gray-700 mb-1">Tipo de Movimiento</label>
+          <select id="tipoMovimiento" formControlName="tipoMovimiento"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+            <option *ngFor="let tipo of tiposMovimiento" [value]="tipo.valor">{{tipo.texto}}</option>
+          </select>
+          <p *ngIf="movimientoForm.get('tipoMovimiento')?.hasError('required') && movimientoForm.get('tipoMovimiento')?.touched"
+            class="mt-1 text-sm text-red-600">
+            El tipo de movimiento es requerido
+          </p>
+        </div>
+
+        <div>
+          <label for="areaOrigen" class="block text-sm font-medium text-gray-700 mb-1">Área Origen</label>
+          <select id="areaOrigen" formControlName="areaOrigen"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+            <option *ngFor="let area of areasDisponibles" [value]="area.valor">{{area.texto}}</option>
+          </select>
+          <p *ngIf="movimientoForm.get('areaOrigen')?.hasError('required') && movimientoForm.get('areaOrigen')?.touched"
+            class="mt-1 text-sm text-red-600">
+            El área origen es requerida
+          </p>
+        </div>
+
+        <div>
+          <label for="areaDestino" class="block text-sm font-medium text-gray-700 mb-1">Área Destino</label>
+          <select id="areaDestino" formControlName="areaDestino"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+            <option value="" disabled>Seleccione un área destino</option>
+            <option *ngFor="let area of areasDisponibles" [value]="area.valor">{{area.texto}}</option>
+          </select>
+          <p *ngIf="movimientoForm.get('areaDestino')?.hasError('required') && movimientoForm.get('areaDestino')?.touched"
+            class="mt-1 text-sm text-red-600">
+            El área destino es requerida
+          </p>
+        </div>
+
+        <div>
+          <label for="cantidad" class="block text-sm font-medium text-gray-700 mb-1">Cantidad (kg)</label>
+          <input type="number" id="cantidad" formControlName="cantidad" placeholder="Cantidad en kg"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+          <p *ngIf="movimientoForm.get('cantidad')?.hasError('required') && movimientoForm.get('cantidad')?.touched"
+            class="mt-1 text-sm text-red-600">
+            La cantidad es requerida
+          </p>
+          <p *ngIf="movimientoForm.get('cantidad')?.hasError('max') && movimientoForm.get('cantidad')?.touched"
+            class="mt-1 text-sm text-red-600">
+            La cantidad no puede ser mayor al stock disponible
+          </p>
+          <p *ngIf="movimientoForm.get('cantidad')?.hasError('min') && movimientoForm.get('cantidad')?.touched"
+            class="mt-1 text-sm text-red-600">
+            La cantidad debe ser mayor a 0
+          </p>
+        </div>
+
+        <div>
+          <label for="referenciaDocumento" class="block text-sm font-medium text-gray-700 mb-1">Referencia Documento</label>
+          <input type="text" id="referenciaDocumento" formControlName="referenciaDocumento"
+            placeholder="Código de documento relacionado (opcional)"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+        </div>
+
+        <div class="col-span-2">
+          <label for="observaciones" class="block text-sm font-medium text-gray-700 mb-1">Observaciones</label>
+          <textarea id="observaciones" formControlName="observaciones" placeholder="Observaciones adicionales" rows="3"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></textarea>
+        </div>
+
+      </form>
+    </div>
+
+    <div class="p-4 border-t border-gray-200 flex justify-end space-x-3">
+      <button (click)="dialogRef.close(false)"
+        class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md">
+        Cancelar
+      </button>
+      <button (click)="registrarMovimiento()" [disabled]="movimientoForm.invalid || loading" [ngClass]="{
+          'opacity-50 cursor-not-allowed': movimientoForm.invalid || loading,
+          'hover:bg-blue-700': !movimientoForm.invalid && !loading
+        }" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md">
+        <span *ngIf="loading"
+          class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-current border-r-transparent mr-1"></span>
+        Registrar Movimiento
+      </button>
+    </div>
+  </div>
+</div>

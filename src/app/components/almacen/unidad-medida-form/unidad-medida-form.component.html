@@ -1,0 +1,160 @@
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-2xl mx-auto">
+      <h2 class="text-2xl font-semibold text-gray-800 mb-6">
+        {{ isEditMode ? 'Editar' : 'Nueva' }} Unidad de Medida
+      </h2>
+  
+      <div *ngIf="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+        <strong class="font-bold">Error!</strong>
+        <span class="block sm:inline"> {{ error }}</span>
+      </div>
+  
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 mb-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="codigo">
+              Código
+            </label>
+            <input 
+              id="codigo"
+              formControlName="codigo"
+              type="text"
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              [ngClass]="{'border-red-500': hasError('codigo')}"
+            >
+            <p *ngIf="hasError('codigo')" class="text-red-500 text-xs italic mt-1">
+              {{ getErrorMessage('codigo') }}
+            </p>
+          </div>
+  
+          <div>
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="nombre">
+              Nombre
+            </label>
+            <input 
+              id="nombre"
+              formControlName="nombre"
+              type="text"
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              [ngClass]="{'border-red-500': hasError('nombre')}"
+            >
+            <p *ngIf="hasError('nombre')" class="text-red-500 text-xs italic mt-1">
+              {{ getErrorMessage('nombre') }}
+            </p>
+          </div>
+  
+          <div>
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="dimension">
+              Dimensión
+            </label>
+            <select 
+              id="dimension"
+              formControlName="dimension"
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              [ngClass]="{'border-red-500': hasError('dimension')}"
+            >
+              <option value="">Seleccione una dimensión</option>
+              <option *ngFor="let dimension of dimensiones" [value]="dimension">
+                {{ dimension }}
+              </option>
+            </select>
+            <p *ngIf="hasError('dimension')" class="text-red-500 text-xs italic mt-1">
+              {{ getErrorMessage('dimension') }}
+            </p>
+          </div>
+  
+          <div>
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="ingles">
+              Inglés
+            </label>
+            <input 
+              id="ingles"
+              formControlName="ingles"
+              type="text"
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              [ngClass]="{'border-red-500': hasError('ingles')}"
+            >
+            <p *ngIf="hasError('ingles')" class="text-red-500 text-xs italic mt-1">
+              {{ getErrorMessage('ingles') }}
+            </p>
+          </div>
+  
+          <div>
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="abreviatura">
+              Abreviatura
+            </label>
+            <input 
+              id="abreviatura"
+              formControlName="abreviatura"
+              type="text"
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              [ngClass]="{'border-red-500': hasError('abreviatura')}"
+            >
+            <p *ngIf="hasError('abreviatura')" class="text-red-500 text-xs italic mt-1">
+              {{ getErrorMessage('abreviatura') }}
+            </p>
+          </div>
+  
+          <div>
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="tipo">
+              Tipo
+            </label>
+            <input 
+              id="tipo"
+              formControlName="tipo"
+              type="text"
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              [ngClass]="{'border-red-500': hasError('tipo')}"
+            >
+            <p *ngIf="hasError('tipo')" class="text-red-500 text-xs italic mt-1">
+              {{ getErrorMessage('tipo') }}
+            </p>
+          </div>
+  
+          <div>
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="factorRedondeo">
+              Factor de Redondeo
+            </label>
+            <input 
+              id="factorRedondeo"
+              formControlName="factorRedondeo"
+              type="number"
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              [ngClass]="{'border-red-500': hasError('factorRedondeo')}"
+            >
+            <p *ngIf="hasError('factorRedondeo')" class="text-red-500 text-xs italic mt-1">
+              {{ getErrorMessage('factorRedondeo') }}
+            </p>
+          </div>
+  
+          <div class="flex items-center">
+            <label class="flex items-center cursor-pointer">
+              <input 
+                type="checkbox"
+                formControlName="aceptaRedondeoPorExceso"
+                class="form-checkbox h-5 w-5 text-blue-600"
+              >
+              <span class="ml-2 text-gray-700">Acepta Redondeo por Exceso</span>
+            </label>
+          </div>
+        </div>
+  
+        <div class="flex items-center justify-between mt-8">
+          <button 
+            type="button"
+            routerLink="/inventarios/unidades-medida"
+            class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-200"
+          >
+            Cancelar
+          </button>
+          <button 
+            type="submit"
+            [disabled]="loading"
+            class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-200 disabled:opacity-50"
+          >
+            {{ loading ? 'Guardando...' : (isEditMode ? 'Actualizar' : 'Guardar') }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>

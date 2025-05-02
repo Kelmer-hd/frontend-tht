@@ -1,0 +1,80 @@
+
+	<main class="py-8 px-10 bg-gray-100 min-h-screen w-full">
+	<!-- Header -->
+	<div class="mb-8">
+	  <h1 class="text-2xl font-bold text-gray-800">Inventario General</h1>
+	  <p class="text-gray-500">Resumen del estado actual del almacén</p>
+	</div>
+  
+	<!-- Stats Cards -->
+	<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+	  <!-- Total productos -->
+	  <div class="bg-white rounded-lg p-6 shadow flex items-center space-x-4">
+		<div class="p-4 bg-blue-100 rounded-full">
+		  <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" stroke-width="2"
+			viewBox="0 0 24 24">
+			<path stroke-linecap="round" stroke-linejoin="round"
+			  d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v6a2 2 0 01-2 2H6a2 2 0 01-2-2v-6m16 0H4" />
+		  </svg>
+		</div>
+		<div>
+		  <h3 class="text-lg font-semibold text-gray-800">Productos Totales</h3>
+		  <p class="text-gray-500 text-sm">1,245</p>
+		</div>
+	  </div>
+  
+	  <!-- Bajo stock -->
+	  <div class="bg-white rounded-lg p-6 shadow flex items-center space-x-4">
+		<div class="p-4 bg-yellow-100 rounded-full">
+		  <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" stroke-width="2"
+			viewBox="0 0 24 24">
+			<path stroke-linecap="round" stroke-linejoin="round"
+			  d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z" />
+		  </svg>
+		</div>
+		<div>
+		  <h3 class="text-lg font-semibold text-gray-800">Bajo Stock</h3>
+		  <p class="text-gray-500 text-sm">58 productos</p>
+		</div>
+	  </div>
+  
+	  <!-- Nuevas Entradas -->
+	  <div class="bg-white rounded-lg p-6 shadow flex items-center space-x-4">
+		<div class="p-4 bg-green-100 rounded-full">
+		  <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" stroke-width="2"
+			viewBox="0 0 24 24">
+			<path stroke-linecap="round" stroke-linejoin="round"
+			  d="M12 4v16m8-8H4" />
+		  </svg>
+		</div>
+		<div>
+		  <h3 class="text-lg font-semibold text-gray-800">Entradas</h3>
+		  <p class="text-gray-500 text-sm">+127 este mes</p>
+		</div>
+	  </div>
+  
+	  <!-- Salidas -->
+	  <div class="bg-white rounded-lg p-6 shadow flex items-center space-x-4">
+		<div class="p-4 bg-red-100 rounded-full">
+		  <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" stroke-width="2"
+			viewBox="0 0 24 24">
+			<path stroke-linecap="round" stroke-linejoin="round"
+			  d="M12 4v16m-8-8h16" />
+		  </svg>
+		</div>
+		<div>
+		  <h3 class="text-lg font-semibold text-gray-800">Salidas</h3>
+		  <p class="text-gray-500 text-sm">-89 este mes</p>
+		</div>
+	  </div>
+	</section>
+  
+	<!-- Sección de Gráficos -->
+	<section class="bg-white rounded-lg p-6 shadow">
+	  <h2 class="text-xl font-bold text-gray-800 mb-4">Actividad del Inventario</h2>
+	  <div class="w-full h-64 bg-gray-200 rounded flex items-center justify-center text-gray-500">
+		[📊 Aquí va tu gráfico - puedes usar Chart.js o ng2-charts]
+	  </div>
+	</section>
+  </main>
+  

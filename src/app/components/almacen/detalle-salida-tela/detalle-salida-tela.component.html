@@ -1,0 +1,258 @@
+<!-- src/app/features/inventarios/components/detalle-salida-tela/detalle-salida-tela.component.html -->
+<div class="container mx-auto px-4 py-6 bg-blue-50">
+  <!-- Header con más presencia -->
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-semibold text-blue-800 flex items-center">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
+        <path d="M11 17a1 1 0 001.447.894l4-2A1 1 0 0017 15V9.236a1 1 0 00-1.447-.894l-4 2a1 1 0 00-.553.894V17z" />
+        <path fill-rule="evenodd" d="M4.447 8.342A1 1 0 003 9.236V15a1 1 0 00.553.894l4 2A1 1 0 009 17v-5.764a1 1 0 00-.553-.894l-4-2z" clip-rule="evenodd" />
+      </svg>
+      Detalle de Salida de Tela
+    </h1>
+    <button (click)="volver()" class="px-4 py-2 bg-white hover:bg-blue-100 text-blue-700 rounded-lg shadow-sm flex items-center transition duration-150">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+      </svg>
+      <span>Volver</span>
+    </button>
+  </div>
+  
+  <!-- Spinner de carga mejorado -->
+  <div *ngIf="loading" class="flex justify-center items-center h-60">
+    <div class="relative">
+      <div class="h-12 w-12 border-t-3 border-b-3 border-blue-600 rounded-full animate-spin"></div>
+      <p class="mt-2 text-blue-800">Cargando información...</p>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && salida">
+    <!-- Card principal con mayor presencia visual -->
+    <div class="bg-white rounded-lg shadow-md border border-blue-100 mb-6 overflow-hidden">
+      <!-- Encabezado con color según estado -->
+      <div 
+        [ngClass]="{
+          'bg-gradient-to-r from-blue-50 to-blue-100 border-l-4 border-blue-500': salida.estado === 'COMPLETADO',
+          'bg-gradient-to-r from-red-50 to-red-100 border-l-4 border-red-500': salida.estado === 'ANULADO'
+        }" 
+        class="p-5">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-xl font-semibold text-gray-800">Salida #{{ salida.id }}</h2>
+            <p class="text-sm text-gray-600 mt-1">Registrado: {{ formatearFecha(salida.fechaRegistro, 'dd/MM/yyyy HH:mm') }}</p>
+          </div>
+          <span 
+            class="px-3 py-1 rounded-full text-sm font-medium shadow-sm"
+            [ngClass]="{
+              'bg-green-100 text-green-800': salida.estado === 'COMPLETADO',
+              'bg-red-100 text-red-800': salida.estado === 'ANULADO'
+            }">
+            {{ salida.estado }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Información de la tela con mejor presentación -->
+      <div class="p-5 border-b border-blue-100">
+        <h3 class="text-md font-semibold text-blue-800 mb-4 flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633z" clip-rule="evenodd" />
+          </svg>
+          Datos de la Tela
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="p-3 bg-blue-50 rounded-lg">
+            <span class="text-xs font-medium text-blue-600 uppercase">ID Tela</span>
+            <p class="font-semibold text-gray-800 mt-1">{{ salida.telaId }}</p>
+          </div>
+          <div *ngIf="salida.tela" class="p-3 bg-blue-50 rounded-lg">
+            <span class="text-xs font-medium text-blue-600 uppercase">Guía</span>
+            <p class="font-semibold text-gray-800 mt-1">{{ salida.tela.numGuia }}</p>
+          </div>
+          <div *ngIf="salida.tela" class="p-3 bg-blue-50 rounded-lg">
+            <span class="text-xs font-medium text-blue-600 uppercase">Tipo</span>
+            <p class="font-semibold text-gray-800 mt-1">{{ salida.tela.tipoTela }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detalles de la salida con mejor diseño -->
+      <div class="p-5 border-b border-blue-100">
+        <h3 class="text-md font-semibold text-blue-800 mb-4 flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+            <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5z" clip-rule="evenodd" />
+          </svg>
+          Detalles de la Salida
+        </h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <div class="p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition duration-150">
+            <span class="text-xs font-medium text-blue-600 uppercase">Servicio de Corte</span>
+            <p class="font-semibold text-gray-800 mt-1">{{ salida.servicioCorte }}</p>
+          </div>
+          <div class="p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition duration-150">
+            <span class="text-xs font-medium text-blue-600 uppercase">Fecha de Salida</span>
+            <p class="font-semibold text-gray-800 mt-1">{{ formatearFecha(salida.fechaSalida, 'dd/MM/yyyy') }}</p>
+          </div>
+          <div class="p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition duration-150">
+            <span class="text-xs font-medium text-blue-600 uppercase">Orden de Producción</span>
+            <p class="font-semibold text-gray-800 mt-1">{{ salida.op }}</p>
+          </div>
+          <div class="p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition duration-150">
+            <span class="text-xs font-medium text-blue-600 uppercase">Cantidad</span>
+            <p class="font-semibold text-gray-800 mt-1">{{ salida.salidaCorte }} kg</p>
+          </div>
+          <div class="p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition duration-150">
+            <span class="text-xs font-medium text-blue-600 uppercase">Área Destino</span>
+            <p class="font-semibold text-gray-800 mt-1">{{ salida.areaDestino }}</p>
+          </div>
+          <div class="p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition duration-150">
+            <span class="text-xs font-medium text-blue-600 uppercase">Usuario</span>
+            <p class="font-semibold text-gray-800 mt-1">{{ salida.usuarioResponsable }}</p>
+          </div>
+        </div>
+        <div class="mt-4 p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition duration-150">
+          <span class="text-xs font-medium text-blue-600 uppercase">Nota</span>
+          <p class="font-semibold text-gray-800 mt-1">{{ salida.notaSalida || 'Sin notas' }}</p>
+        </div>
+      </div>
+      
+      <!-- Acciones con botones más atractivos -->
+      <div class="p-5 flex flex-wrap gap-3 justify-end bg-gray-50">
+        <button 
+          *ngIf="salida.estado === 'COMPLETADO'"
+          (click)="toggleFormConsumo()" 
+          class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-md flex items-center transition duration-150">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5zm11 1H6v8l4-2 4 2V6z" clip-rule="evenodd" />
+          </svg>
+          <span>Registrar Consumo Real</span>
+        </button>
+        
+        <button 
+          *ngIf="salida.estado === 'COMPLETADO'"
+          (click)="toggleConfirmacionAnular()" 
+          class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow-md flex items-center transition duration-150">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+          </svg>
+          <span>Anular Salida</span>
+        </button>
+        
+        <button 
+          (click)="verHistorialMovimientos()" 
+          class="px-4 py-2 bg-gray-700 hover:bg-gray-800 text-white rounded-lg shadow-md flex items-center transition duration-150">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+          </svg>
+          <span>Ver Historial</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Formulario para registrar consumo real mejorado -->
+    <div *ngIf="mostrarFormConsumo && salida" class="bg-white rounded-lg shadow-md border border-blue-100 p-5 mb-6">
+      <h3 class="text-lg font-semibold text-blue-800 mb-4">Registrar Consumo Real</h3>
+      <form [formGroup]="consumoRealForm">
+        <div class="mb-4">
+          <label for="consumoReal" class="block text-sm font-medium text-gray-700 mb-1">
+            Consumo Real (kg) - Máximo: {{ salida.salidaCorte }} kg
+          </label>
+          <div class="flex">
+            <input 
+              type="number" 
+              id="consumoReal" 
+              formControlName="consumoReal" 
+              placeholder="Ingrese el consumo real"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+          </div>
+          <p *ngIf="consumoRealForm.get('consumoReal')?.hasError('required') && consumoRealForm.get('consumoReal')?.touched" 
+            class="mt-1 text-xs text-red-600">
+            El consumo real es requerido
+          </p>
+          <p *ngIf="consumoRealForm.get('consumoReal')?.hasError('min') && consumoRealForm.get('consumoReal')?.touched" 
+            class="mt-1 text-xs text-red-600">
+            El consumo real debe ser mayor a 0
+          </p>
+          <p *ngIf="consumoRealForm.get('consumoReal')?.hasError('max') && consumoRealForm.get('consumoReal')?.touched" 
+            class="mt-1 text-xs text-red-600">
+            El consumo real no puede exceder {{ salida.salidaCorte }} kg
+          </p>
+        </div>
+        
+        <div class="mb-4">
+          <label for="observacion" class="block text-sm font-medium text-gray-700 mb-1">Observaciones</label>
+          <textarea 
+            id="observacion" 
+            formControlName="observacion" 
+            placeholder="Ingrese observaciones (opcional)"
+            rows="3"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"></textarea>
+        </div>
+        
+        <div class="flex justify-end gap-3">
+          <button 
+            type="button"
+            (click)="toggleFormConsumo()"
+            class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition duration-150">
+            Cancelar
+          </button>
+          <button 
+            type="button"
+            (click)="registrarConsumoReal()"
+            [disabled]="consumoRealForm.invalid || loadingConsumo"
+            [ngClass]="{'opacity-50 cursor-not-allowed': consumoRealForm.invalid || loadingConsumo}"
+            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-md transition duration-150">
+            <span *ngIf="loadingConsumo" class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-current border-r-transparent mr-2"></span>
+            Guardar
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Confirmación para anular salida mejorada -->
+    <div *ngIf="mostrarConfirmacionAnular" class="bg-white rounded-lg shadow-md border-l-4 border-red-500 p-5 mb-6">
+      <h3 class="text-lg font-semibold text-red-700 mb-3">¿Está seguro de anular esta salida?</h3>
+      <p class="text-gray-600 mb-4">Esta acción devolverá el stock al inventario y no se puede deshacer.</p>
+      
+      <div class="mb-4">
+        <label for="motivo" class="block text-sm font-medium text-gray-700 mb-1">Motivo de Anulación</label>
+        <textarea 
+          id="motivo" 
+          [(ngModel)]="motivo" 
+          placeholder="Ingrese el motivo de anulación"
+          rows="3"
+          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500"></textarea>
+      </div>
+      
+      <div class="flex justify-end gap-3">
+        <button 
+          type="button"
+          (click)="toggleConfirmacionAnular()"
+          class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition duration-150">
+          Cancelar
+        </button>
+        <button 
+          type="button"
+          (click)="anularSalida()"
+          [disabled]="!motivo.trim() || loadingAnular"
+          [ngClass]="{'opacity-50 cursor-not-allowed': !motivo.trim() || loadingAnular}"
+          class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow-md transition duration-150">
+          <span *ngIf="loadingAnular" class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-current border-r-transparent mr-2"></span>
+          Confirmar Anulación
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mensaje cuando no se encuentra la salida -->
+  <div *ngIf="!loading && !salida" class="bg-white rounded-lg shadow-md p-5 border-l-4 border-yellow-400">
+    <div class="flex items-center">
+      <svg class="h-6 w-6 text-yellow-500 mr-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+      </svg>
+      <p class="text-gray-700">
+        No se encontró la salida solicitada. Verifique el ID o regrese a la lista de salidas.
+      </p>
+    </div>
+  </div>
+</div>
