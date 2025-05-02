@@ -1,0 +1,228 @@
+<!-- src/app/features/inventarios/components/lista-salidas/lista-salidas.component.html -->
+<div class="container mx-auto px-4 py-6">
+    <!-- Encabezado con botones de acción -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+        <div>
+            <h1 class="text-2xl font-semibold text-blue-800 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-blue-600" viewBox="0 0 20 20"
+                    fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clip-rule="evenodd" />
+                </svg>
+                Salidas de Tela
+            </h1>
+            <p class="text-gray-600 mt-1">Administre las salidas de tela del almacén</p>
+        </div>
+
+        <div class="flex gap-3 mt-4 md:mt-0">
+            <button (click)="toggleFiltros()"
+                class="px-4 py-2 bg-white hover:bg-gray-100 text-gray-700 border border-gray-300 rounded-lg shadow-sm flex items-center transition duration-150">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z"
+                        clip-rule="evenodd" />
+                </svg>
+                <span>{{ mostrarFiltros ? 'Ocultar Filtros' : 'Mostrar Filtros' }}</span>
+            </button>
+
+            <button (click)="nuevaSalida()"
+                class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-md flex items-center transition duration-150">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                        clip-rule="evenodd" />
+                </svg>
+                <span>Nueva Salida</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Panel de filtros -->
+    <div *ngIf="mostrarFiltros" class="bg-white rounded-lg shadow-md mb-6 p-5 border border-blue-100 animate-fadeIn">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">Filtros de Búsqueda</h2>
+
+        <form [formGroup]="filtroForm" (ngSubmit)="aplicarFiltros()">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div>
+                    <label for="op" class="block text-sm font-medium text-gray-700 mb-1">Orden de Producción</label>
+                    <input type="text" id="op" formControlName="op" placeholder="Buscar por OP"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                </div>
+
+                <div>
+                    <label for="areaDestino" class="block text-sm font-medium text-gray-700 mb-1">Área Destino</label>
+                    <select id="areaDestino" formControlName="areaDestino"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">Todas las áreas</option>
+                        <option value="CORTE">CORTE</option>
+                        <option value="CONFECCION">CONFECCIÓN</option>
+                        <option value="ACABADO">ACABADO</option>
+                        <option value="EXTERNO">SERVICIO EXTERNO</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="fechaInicio" class="block text-sm font-medium text-gray-700 mb-1">Fecha Desde</label>
+                    <input type="date" id="fechaInicio" formControlName="fechaInicio"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                </div>
+
+                <div>
+                    <label for="fechaFin" class="block text-sm font-medium text-gray-700 mb-1">Fecha Hasta</label>
+                    <input type="date" id="fechaFin" formControlName="fechaFin"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                </div>
+            </div>
+
+            <div class="flex justify-end mt-4 gap-3">
+                <button type="button" (click)="limpiarFiltros()"
+                    class="px-4 py-2 bg-white hover:bg-gray-100 text-gray-700 border border-gray-300 rounded-md shadow-sm transition duration-150">
+                    Limpiar
+                </button>
+                <button type="submit"
+                    class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md shadow-md transition duration-150">
+                    Aplicar Filtros
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Indicador de filtros aplicados -->
+    <div *ngIf="filtrosAplicados && !mostrarFiltros"
+        class="bg-blue-50 rounded-lg p-3 mb-4 flex justify-between items-center">
+        <span class="text-blue-700">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-1" viewBox="0 0 20 20"
+                fill="currentColor">
+                <path fill-rule="evenodd"
+                    d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z"
+                    clip-rule="evenodd" />
+            </svg>
+            Filtros aplicados
+        </span>
+        <button (click)="limpiarFiltros()" class="text-blue-600 hover:text-blue-800 font-medium">
+            Limpiar filtros
+        </button>
+    </div>
+
+    <!-- Spinner de carga -->
+    <div *ngIf="loading" class="flex justify-center items-center h-60">
+        <div class="relative">
+            <div class="h-12 w-12 border-t-3 border-b-3 border-blue-600 rounded-full animate-spin"></div>
+            <p class="mt-2 text-blue-800">Cargando salidas...</p>
+        </div>
+    </div>
+
+    <!-- Tabla de resultados -->
+    <div *ngIf="!loading" class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID
+                        </th>
+                        <th scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha
+                        </th>
+                        <th scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">OP
+                        </th>
+                        <th scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Área
+                            Destino</th>
+                        <th scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Cantidad</th>
+                        <th scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Estado</th>
+                        <th scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <tr *ngFor="let salida of salidas" class="hover:bg-gray-50 transition duration-150">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ salida.id }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{
+                            formatearFecha(salida.fechaSalida) }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ salida.op }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ salida.areaDestino }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ salida.salidaCorte }} kg</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span [ngClass]="getEstadoClass(salida.estado)"
+                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full py-1">
+                                {{ salida.estado }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <button (click)="verDetalle(salida.id)"
+                                class="text-blue-600 hover:text-blue-900 font-medium transition duration-150">
+                                Ver detalle
+                            </button>
+                        </td>
+                    </tr>
+
+                    <!-- Mensaje cuando no hay resultados -->
+                    <tr *ngIf="salidas.length === 0">
+                        <td colspan="7" class="px-6 py-10 text-center text-gray-500">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto text-gray-400 mb-2"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <p class="text-lg">No se encontraron salidas</p>
+                            <p class="text-sm mt-1" *ngIf="filtrosAplicados">Prueba con otros filtros de búsqueda</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Paginación -->
+        <div *ngIf="totalItems > 0"
+            class="bg-gray-50 px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                <div>
+                    <p class="text-sm text-gray-700">
+                        Mostrando <span class="font-medium">{{ rangoElementos }}</span> resultados
+                    </p>
+                </div>
+                <div>
+                    <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                        <button (click)="cambiarPagina(currentPage - 1)" [disabled]="!tieneAnterior"
+                            [ngClass]="{'opacity-50 cursor-not-allowed': !tieneAnterior}"
+                            class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            <span class="sr-only">Anterior</span>
+                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd"
+                                    d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </button>
+
+                        <!-- Número de página actual -->
+                        <span
+                            class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                            {{ currentPage + 1 }}
+                        </span>
+
+                        <button (click)="cambiarPagina(currentPage + 1)" [disabled]="!tieneSiguiente"
+                            [ngClass]="{'opacity-50 cursor-not-allowed': !tieneSiguiente}"
+                            class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            <span class="sr-only">Siguiente</span>
+                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd"
+                                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -214,6 +214,8 @@
                                 Marca</th>
                             <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 OP</th>
+                            <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Almacen</th>
                             <!-- <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
                                 (click)="ordenarPor('fechaIngreso')">
                                 <div class="flex items-center">
@@ -226,8 +228,7 @@
                                 </div>
                             </th> -->
 
-                            <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Almacen</th>
+
                             <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Rollos</th>
                             <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -251,6 +252,7 @@
                             <td class="px-2 py-2 whitespace-nowrap">{{ item.tela.op }}</td>
                             <td class="px-2 py-2 whitespace-nowrap">{{ item.tela.almacen }}</td>
                             <!-- <td class="px-2 py-2 whitespace-nowrap">{{ formatDate(item.tela.fechaIngreso) }}</td> -->
+
                             <td class="px-2 py-2 whitespace-nowrap">{{ item.tela.cantRolloIngresado }}</td>
                             <td class="px-2 py-2 whitespace-nowrap">{{ item.tela.pesoIngresado }} kg</td>
                             <td class="px-2 py-2 whitespace-nowrap">{{ item.tela.tipoTela }}</td>

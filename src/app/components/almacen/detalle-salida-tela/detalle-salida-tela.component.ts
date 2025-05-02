@@ -1,12 +1,17 @@
 // src/app/features/inventarios/components/detalle-salida-tela/detalle-salida-tela.component.ts
 import { Component, OnInit } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { FormBuilder, FormGroup, FormsModule, NgModel, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SalidaCorteService } from '../../../service/salida-corte.service';
 import { MovimientoTelaService } from '../../../service/movimiento-tela.service';
 import { SalidaCorte } from '../../../interface/salida-corte.interface';
 import { DialogService } from '../../../service/dialog.service';
+import { ToastrService } from 'ngx-toastr';
+import { AuthService } from '../../../service/auth.service';
+import { format, parseISO, isValid } from 'date-fns';
+import { es } from 'date-fns/locale';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-detalle-salida-tela',
@@ -29,16 +34,15 @@ export class DetalleSalidaTelaComponent implements OnInit {
   mostrarConfirmacionAnular = false;
   loadingAnular = false;
 
-  // Usuario actual (idealmente usar un servicio de autenticación)
-  usuarioResponsable = 'SISTEMA';
-
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private salidaCorteService: SalidaCorteService,
     private movimientoTelaService: MovimientoTelaService,
     private fb: FormBuilder,
-    private dialogService: DialogService
+    private dialogService: DialogService,
+    private toastr: ToastrService,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -48,6 +52,7 @@ export class DetalleSalidaTelaComponent implements OnInit {
         this.salidaId = +idParam;
         this.cargarDetalleSalida();
       } else {
+        this.toastr.warning('ID de salida no proporcionado', 'Advertencia');
         this.router.navigate(['/inventarios/salidas']);
       }
     });
@@ -55,74 +60,112 @@ export class DetalleSalidaTelaComponent implements OnInit {
     this.inicializarFormulario();
   }
 
+  /**
+   * Inicializa el formulario de consumo real con validaciones básicas
+   */
   inicializarFormulario(): void {
     this.consumoRealForm = this.fb.group({
-      consumoReal: [null, [Validators.required, Validators.min(0.1)]],
-      observacion: ['']
+      consumoReal: [null, [
+        Validators.required,
+        Validators.min(0.1)
+      ]],
+      observacion: ['', Validators.maxLength(200)]
     });
   }
 
+  /**
+   * Carga los detalles de la salida desde el servicio
+   */
   cargarDetalleSalida(): void {
     this.loading = true;
-    this.salidaCorteService.obtenerSalida(this.salidaId).subscribe({
-      next: (data) => {
-        this.salida = data;
+    this.salidaCorteService.obtenerSalida(this.salidaId)
+      .pipe(
+        finalize(() => this.loading = false)
+      )
+      .subscribe({
+        next: (data) => {
+          this.salida = data;
 
-        // Actualizar validaciones del formulario de consumo real
-        if (this.salida) {
-          const consumoRealControl = this.consumoRealForm.get('consumoReal');
-          if (consumoRealControl) {
-            consumoRealControl.setValidators([
-              Validators.required,
-              Validators.min(0.1),
-              Validators.max(this.salida.salidaCorte)
-            ]);
-            consumoRealControl.updateValueAndValidity();
+          // Actualizar validaciones del formulario de consumo real
+          if (this.salida) {
+            const consumoRealControl = this.consumoRealForm.get('consumoReal');
+            if (consumoRealControl) {
+              consumoRealControl.setValidators([
+                Validators.required,
+                Validators.min(0.1),
+                Validators.max(this.salida.salidaCorte)
+              ]);
+              consumoRealControl.updateValueAndValidity();
+            }
           }
+        },
+        error: () => {
+          // El interceptor global manejará la notificación del error
+          this.router.navigate(['/inventarios/salidas']);
         }
-
-        this.loading = false;
-      },
-      error: () => {
-        this.loading = false;
-        // El interceptor global manejará la notificación del error
-        this.router.navigate(['/inventarios/salidas']);
-      }
-    });
+      });
   }
 
+  /**
+   * Muestra u oculta el formulario de consumo real
+   */
   toggleFormConsumo(): void {
     this.mostrarFormConsumo = !this.mostrarFormConsumo;
+    if (this.mostrarFormConsumo) {
+      this.consumoRealForm.reset();
+    }
   }
 
+  /**
+   * Obtiene el nombre de usuario actual del servicio de autenticación
+   */
+  private getUsuarioActual(): string {
+    const user = this.authService.getCurrentUser();
+    return user?.username || 'SISTEMA';
+  }
+
+  /**
+   * Registra el consumo real de una salida
+   */
   registrarConsumoReal(): void {
     if (this.consumoRealForm.invalid || this.loadingConsumo || !this.salida) {
+      // Marcar campos como touched para mostrar errores
+      if (this.consumoRealForm.invalid) {
+        Object.keys(this.consumoRealForm.controls).forEach(key => {
+          this.consumoRealForm.get(key)?.markAsTouched();
+        });
+        this.toastr.warning('Por favor complete correctamente todos los campos requeridos', 'Formulario inválido');
+      }
       return;
     }
 
     this.loadingConsumo = true;
     const consumoDTO = {
       consumoReal: this.consumoRealForm.value.consumoReal,
-      observacion: this.consumoRealForm.value.observacion,
-      usuario: this.usuarioResponsable
+      observacion: this.consumoRealForm.value.observacion || '',
+      usuario: this.getUsuarioActual()
     };
 
-    this.salidaCorteService.registrarConsumoReal(this.salidaId, consumoDTO).subscribe({
-      next: (result) => {
-        this.loadingConsumo = false;
-        this.mostrarFormConsumo = false;
-        this.salida = result;
-        this.consumoRealForm.reset();
-        // Mostrar mensaje de éxito (puedes usar toastr si lo prefieres)
-        alert('Consumo real registrado correctamente');
-      },
-      error: () => {
-        this.loadingConsumo = false;
-        // El interceptor global manejará la notificación del error
-      }
-    });
+    this.salidaCorteService.registrarConsumoReal(this.salidaId, consumoDTO)
+      .pipe(
+        finalize(() => this.loadingConsumo = false)
+      )
+      .subscribe({
+        next: (result) => {
+          this.mostrarFormConsumo = false;
+          this.salida = result;
+          this.consumoRealForm.reset();
+          this.toastr.success('Consumo real registrado correctamente', 'Éxito');
+        },
+        error: () => {
+          // El interceptor global manejará la notificación del error
+        }
+      });
   }
 
+  /**
+   * Muestra u oculta el formulario de anulación
+   */
   toggleConfirmacionAnular(): void {
     this.mostrarConfirmacionAnular = !this.mostrarConfirmacionAnular;
     if (!this.mostrarConfirmacionAnular) {
@@ -130,10 +173,13 @@ export class DetalleSalidaTelaComponent implements OnInit {
     }
   }
 
+  /**
+   * Anula una salida existente
+   */
   anularSalida(): void {
     if (!this.motivo.trim() || this.loadingAnular || !this.salida) {
       if (!this.motivo.trim()) {
-        alert('Debe ingresar un motivo para anular la salida');
+        this.toastr.warning('Debe ingresar un motivo para anular la salida', 'Advertencia');
       }
       return;
     }
@@ -141,25 +187,29 @@ export class DetalleSalidaTelaComponent implements OnInit {
     this.loadingAnular = true;
     const anularDTO = {
       motivo: this.motivo,
-      usuario: this.usuarioResponsable
+      usuario: this.getUsuarioActual()
     };
 
-    this.salidaCorteService.anularSalida(this.salidaId, anularDTO).subscribe({
-      next: (result) => {
-        this.loadingAnular = false;
-        this.mostrarConfirmacionAnular = false;
-        this.salida = result;
-        this.motivo = '';
-        // Mostrar mensaje de éxito
-        alert('Salida anulada correctamente');
-      },
-      error: () => {
-        this.loadingAnular = false;
-        // El interceptor global manejará la notificación del error
-      }
-    });
+    this.salidaCorteService.anularSalida(this.salidaId, anularDTO)
+      .pipe(
+        finalize(() => this.loadingAnular = false)
+      )
+      .subscribe({
+        next: (result) => {
+          this.mostrarConfirmacionAnular = false;
+          this.salida = result;
+          this.motivo = '';
+          this.toastr.success('Salida anulada correctamente', 'Éxito');
+        },
+        error: () => {
+          // El interceptor global manejará la notificación del error
+        }
+      });
   }
 
+  /**
+   * Navega a la pantalla de historial de movimientos
+   */
   verHistorialMovimientos(): void {
     if (!this.salida) return;
 
@@ -169,64 +219,46 @@ export class DetalleSalidaTelaComponent implements OnInit {
     });
   }
 
+  /**
+   * Navega de vuelta a la lista de salidas
+   */
   volver(): void {
     this.router.navigate(['/inventarios/salidas']);
   }
 
+  /**
+   * Formatea una fecha usando date-fns
+   * @param fecha Fecha a formatear
+   * @param formato Formato deseado
+   */
   formatearFecha(fecha: any, formato: string = 'dd/MM/yyyy'): string {
     if (!fecha) return 'N/A';
     
     try {
-      let fechaObj: Date;
+      // Convertir a string si no lo es
+      const fechaStr = typeof fecha === 'string' ? fecha : JSON.stringify(fecha);
       
-      // Si la fecha ya es un array
-      if (Array.isArray(fecha)) {
-        if (fecha.length >= 6) {
-          // Array completo [año, mes, día, hora, minuto, segundo]
-          fechaObj = new Date(fecha[0], fecha[1]-1, fecha[2], fecha[3], fecha[4], fecha[5]);
-        } else if (fecha.length >= 3) {
-          // Solo fecha sin hora [año, mes, día]
-          fechaObj = new Date(fecha[0], fecha[1]-1, fecha[2], 0, 0, 0);
-        } else {
-          throw new Error('Formato de array de fecha incorrecto');
-        }
-      } 
-      // Si la fecha viene como string con formato "YYYY,M,D,H,M,S"
-      else if (typeof fecha === 'string' && fecha.includes(',')) {
-        const partes = fecha.split(',').map(Number);
-        if (partes.length >= 6) {
-          fechaObj = new Date(partes[0], partes[1]-1, partes[2], partes[3], partes[4], partes[5]);
-        } else if (partes.length >= 3) {
-          fechaObj = new Date(partes[0], partes[1]-1, partes[2], 0, 0, 0);
-        } else {
-          throw new Error('Formato de string de fecha incorrecto');
-        }
-      } 
-      // Intentar parsear como fecha normal
-      else {
-        fechaObj = new Date(fecha);
-      }
+      // Intentar parsear la fecha
+      const fechaObj = parseISO(fechaStr);
       
       // Verificar si la fecha es válida
-      if (isNaN(fechaObj.getTime())) {
-        console.error('Fecha inválida:', fecha);
-        return 'Fecha inválida';
+      if (isValid(fechaObj)) {
+        return format(fechaObj, formato, { locale: es });
       }
       
-      // Formatear la fecha manualmente para no depender del pipe
-      const day = String(fechaObj.getDate()).padStart(2, '0');
-      const month = String(fechaObj.getMonth() + 1).padStart(2, '0');
-      const year = fechaObj.getFullYear();
-      
-      if (formato.includes('HH:mm')) {
-        const hours = String(fechaObj.getHours()).padStart(2, '0');
-        const minutes = String(fechaObj.getMinutes()).padStart(2, '0');
-        return `${day}/${month}/${year} ${hours}:${minutes}`;
-      } else {
-        return `${day}/${month}/${year}`;
+      // Si no se pudo parsear, intentar con otras estrategias...
+      if (Array.isArray(fecha)) {
+        if (fecha.length >= 3) {
+          const fechaObj = new Date(fecha[0], fecha[1]-1, fecha[2]);
+          if (isValid(fechaObj)) {
+            return format(fechaObj, formato, { locale: es });
+          }
+        }
       }
+      
+      return 'Fecha inválida';
     } catch (e) {
-     //console.error('Error al formatear fecha:', fecha, e, 'Stack:', e.stack);
+      console.error('Error al formatear fecha:', fecha, e);
       return 'Fecha inválida';
     }
   }
