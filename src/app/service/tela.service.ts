@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { Tela, TelaCreateDTO, TelaFiltroDTO, TelasPaginadas } from '../interface/tela.interface';
 import { ImportacionResultado } from '../interface/almacen-tela.interface';
 import { environment } from '../../environments/environment';
@@ -117,24 +117,30 @@ export class TelaService {
   }
 
   /**
-   * Obtiene estadísticas mensuales
-   */
-  getEstadisticasMensuales(año?: number): Observable<any[]> {
-    let params = new HttpParams();
-    if (año) {
-      params = params.set('año', año.toString());
-    }
-    
-    return this.http.get<any[]>(`${this.apiUrl}/estadisticas/mensual`, { params });
-  }
-
-  /**
    * Descarga reporte en formato específico
    */
-  descargarReporte(formato: string = 'excel'): void {
-    window.open(`${this.apiUrl}/reportes?formato=${formato}`, '_blank');
+  descargarReporte(formato: string = 'excel'): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/reportes?formato=${formato}`, {
+      responseType: 'blob',
+      // Los headers se incluyen automáticamente por el interceptor de HTTP
+    }).pipe(
+      tap(blob => {
+        // Crear una URL para el blob
+        const url = window.URL.createObjectURL(blob);
+        // Crear un elemento <a> para descargar
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `reporte-telas.${formato === 'excel' ? 'xlsx' : 'pdf'}`;
+        // Añadir al documento, hacer clic y luego eliminar
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      })
+    );
   }
 
+  
   /**
    * Genera reporte filtrado en formato específico
    */

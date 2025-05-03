@@ -126,7 +126,7 @@ export class HistorialMovimientosDialogComponent implements OnInit {
     if (!fecha || isNaN(fecha.getTime())) {
       return 'Fecha no disponible';
     }
-    return this.datePipe.transform(fecha, 'dd/MM/yyyy HH:mm') || '';
+    return this.datePipe.transform(fecha, 'dd/MM/yyyy') || '';
   }
 
   crearFechaSegura(fechaStr: string | null): Date | null {

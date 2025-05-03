@@ -365,4 +365,16 @@ export class AlmacenDetailComponent implements OnInit {
       data: { telaId: telaId }
     });
   }
+
+  getTelaStock(item: any): number {
+    // Intenta acceder al stock de diferentes maneras según la estructura
+    if (item.tela && item.tela.stockReal !== undefined) {
+      return item.tela.stockReal;
+    } else if (item.stockReal !== undefined) {
+      return item.stockReal;
+    }
+    // Valor por defecto
+    return 0;
+  }
+
 }

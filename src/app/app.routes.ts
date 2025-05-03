@@ -20,6 +20,7 @@ import { ComprasListComponent } from './components/compras/compras-list/compras-
 import { ProduccionDashboardComponent } from './components/produccion/produccion-dashboard/produccion-dashboard.component';
 import { ProduccionListComponent } from './components/produccion/produccion-list/produccion-list.component';
 import { authGuard } from './guards/auth.guard';
+import { TelaFormComponent } from './components/almacen/tela-form/tela-form.component';
 
 export const routes: Routes = [
   // Ruta de autenticación
@@ -48,7 +49,9 @@ export const routes: Routes = [
           { path: 'almacenes/editar/:id', component: AlamacenFormComponent },
           { path: 'almacenes/:almacenId/telas/importar', component: TelaImportComponent },
           { path: 'almacenes/detalle/:id', component: AlmacenDetailComponent },
-          { path: 'almacenes/:almacenId/telas', component: TelaListComponent },
+          { path: 'almacenes/:almacenId/telas', component: TelaListComponent }, 
+          { path: 'telas/nuevo', component: TelaFormComponent },
+          { path: 'telas/:id/editar', component: TelaFormComponent },
 
           // Rutas para Unidades de Medida
           { path: 'unidades-medida', component: UnidadMedidaListComponent },

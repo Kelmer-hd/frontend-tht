@@ -1,0 +1,251 @@
+<!-- Contenedor principal -->
+<div class="container px-4 py-6 mx-auto">
+  <h1 class="mb-6 text-2xl font-bold text-gray-800">
+    {{ isEditing ? 'Editar' : 'Crear' }} Tela
+  </h1>
+
+  <!-- Loader mientras se carga la tela en modo edición -->
+  <div *ngIf="isLoading" class="flex items-center justify-center p-8">
+    <div class="w-12 h-12 border-4 border-blue-600 rounded-full animate-spin border-t-transparent"></div>
+    <span class="ml-2 text-lg text-gray-700">Cargando información...</span>
+  </div>
+
+  <!-- Formulario -->
+  <form [formGroup]="telaForm" (ngSubmit)="saveTela()" *ngIf="!isLoading" class="bg-white rounded-lg shadow-md p-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+      <!-- Número de Guía -->
+      <div class="space-y-2">
+        <label for="numGuia" class="block text-sm font-medium text-gray-700">
+          Número de Guía *
+        </label>
+        <input type="text" id="numGuia" formControlName="numGuia"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          [ngClass]="{'border-red-500': hasError('numGuia')}">
+        <div *ngIf="hasError('numGuia')" class="text-sm text-red-600">
+          El número de guía es requerido
+        </div>
+      </div>
+
+      <!-- Partida -->
+      <div class="space-y-2">
+        <label for="partida" class="block text-sm font-medium text-gray-700">
+          Partida *
+        </label>
+        <input type="text" id="partida" formControlName="partida"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          [ngClass]="{'border-red-500': hasError('partida')}">
+        <div *ngIf="hasError('partida')" class="text-sm text-red-600">
+          La partida es requerida
+        </div>
+      </div>
+
+      <!-- OS -->
+      <div class="space-y-2">
+        <label for="os" class="block text-sm font-medium text-gray-700">
+          OS
+        </label>
+        <input type="text" id="os" formControlName="os"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+      </div>
+
+      <!-- Proveedor -->
+      <div class="space-y-2">
+        <label for="proveedor" class="block text-sm font-medium text-gray-700">
+          Proveedor *
+        </label>
+        <input type="text" id="proveedor" formControlName="proveedor"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          [ngClass]="{'border-red-500': hasError('proveedor')}">
+        <div *ngIf="hasError('proveedor')" class="text-sm text-red-600">
+          El proveedor es requerido
+        </div>
+      </div>
+
+      <!-- Fecha de Ingreso -->
+      <div class="space-y-2">
+        <label for="fechaIngreso" class="block text-sm font-medium text-gray-700">
+          Fecha de Ingreso *
+        </label>
+        <input type="date" id="fechaIngreso" formControlName="fechaIngreso"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          [ngClass]="{'border-red-500': hasError('fechaIngreso')}">
+        <div *ngIf="hasError('fechaIngreso')" class="text-sm text-red-600">
+          La fecha de ingreso es requerida
+        </div>
+      </div>
+
+      <!-- Cliente -->
+      <div class="space-y-2">
+        <label for="cliente" class="block text-sm font-medium text-gray-700">
+          Cliente *
+        </label>
+        <input type="text" id="cliente" formControlName="cliente"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          [ngClass]="{'border-red-500': hasError('cliente')}">
+        <div *ngIf="hasError('cliente')" class="text-sm text-red-600">
+          El cliente es requerido
+        </div>
+      </div>
+
+      <!-- Marca -->
+      <div class="space-y-2">
+        <label for="marca" class="block text-sm font-medium text-gray-700">
+          Marca
+        </label>
+        <input type="text" id="marca" formControlName="marca"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+      </div>
+
+      <!-- OP -->
+      <div class="space-y-2">
+        <label for="op" class="block text-sm font-medium text-gray-700">
+          OP
+        </label>
+        <input type="text" id="op" formControlName="op"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+      </div>
+
+      <!-- Tipo de Tela -->
+      <div class="space-y-2">
+        <label for="tipoTela" class="block text-sm font-medium text-gray-700">
+          Tipo de Tela *
+        </label>
+        <select id="tipoTela" formControlName="tipoTela"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          [ngClass]="{'border-red-500': hasError('tipoTela')}">
+          <option value="">Seleccione un tipo</option>
+          <option *ngFor="let tipo of tiposTela" [value]="tipo">
+            {{ tipo }}
+          </option>
+        </select>
+        <div *ngIf="hasError('tipoTela')" class="text-sm text-red-600">
+          El tipo de tela es requerido
+        </div>
+      </div>
+
+      <!-- Descripción -->
+      <div class="space-y-2">
+        <label for="descripcion" class="block text-sm font-medium text-gray-700">
+          Descripción
+        </label>
+        <textarea id="descripcion" formControlName="descripcion" rows="2"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+      </div>
+
+      <!-- Ench -->
+      <div class="space-y-2">
+        <label for="ench" class="block text-sm font-medium text-gray-700">
+          Ench
+        </label>
+        <input type="text" id="ench" formControlName="ench"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+      </div>
+
+      <!-- Cantidad de Rollos -->
+      <div class="space-y-2">
+        <label for="cantRolloIngresado" class="block text-sm font-medium text-gray-700">
+          Cantidad de Rollos *
+        </label>
+        <input type="number" id="cantRolloIngresado" formControlName="cantRolloIngresado" min="0"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          [ngClass]="{'border-red-500': hasError('cantRolloIngresado')}">
+        <div *ngIf="hasErrorType('cantRolloIngresado', 'required')" class="text-sm text-red-600">
+          La cantidad de rollos es requerida
+        </div>
+        <div *ngIf="hasErrorType('cantRolloIngresado', 'min')" class="text-sm text-red-600">
+          La cantidad de rollos debe ser mayor o igual a 0
+        </div>
+      </div>
+
+      <!-- Peso Ingresado -->
+      <div class="space-y-2">
+        <label for="pesoIngresado" class="block text-sm font-medium text-gray-700">
+          Peso Ingresado (kg) *
+        </label>
+        <input type="number" id="pesoIngresado" formControlName="pesoIngresado" min="0" step="0.01"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          [ngClass]="{'border-red-500': hasError('pesoIngresado')}">
+        <div *ngIf="hasErrorType('pesoIngresado', 'required')" class="text-sm text-red-600">
+          El peso ingresado es requerido
+        </div>
+        <div *ngIf="hasErrorType('pesoIngresado', 'min')" class="text-sm text-red-600">
+          El peso ingresado debe ser mayor o igual a 0
+        </div>
+      </div>
+
+      <!-- Stock Real -->
+      <div class="space-y-2">
+        <label for="stockReal" class="block text-sm font-medium text-gray-700">
+          Stock Real (kg) *
+        </label>
+        <input type="number" id="stockReal" formControlName="stockReal" min="0" step="0.01"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          [ngClass]="{'border-red-500': hasError('stockReal')}">
+        <div *ngIf="hasErrorType('stockReal', 'required')" class="text-sm text-red-600">
+          El stock real es requerido
+        </div>
+        <div *ngIf="hasErrorType('stockReal', 'min')" class="text-sm text-red-600">
+          El stock real debe ser mayor o igual a 0
+        </div>
+      </div>
+
+      <!-- Estado -->
+      <div class="space-y-2">
+        <label for="estado" class="block text-sm font-medium text-gray-700">
+          Estado *
+        </label>
+        <select id="estado" formControlName="estado"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          [ngClass]="{'border-red-500': hasError('estado')}">
+          <option *ngFor="let estado of estados" [value]="estado">
+            {{ estado }}
+          </option>
+        </select>
+        <div *ngIf="hasError('estado')" class="text-sm text-red-600">
+          El estado es requerido
+        </div>
+      </div>
+
+      <!-- Almacén -->
+      <div class="space-y-2">
+        <label for="almacen" class="block text-sm font-medium text-gray-700">
+          Almacén *
+        </label>
+        <select id="almacen" formControlName="almacen"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          [ngClass]="{'border-red-500': hasError('almacen')}">
+          <option value="">Seleccione un almacén</option>
+          <option *ngFor="let almacen of almacenes" [value]="almacen">
+            {{ almacen }}
+          </option>
+        </select>
+        <div *ngIf="hasError('almacen')" class="text-sm text-red-600">
+          El almacén es requerido
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="flex justify-end space-x-4 mt-8">
+      <button type="button" (click)="cancel()"
+        class="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500">
+        Cancelar
+      </button>
+
+      <button type="submit" [disabled]="isSaving"
+        class="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-blue-300 disabled:cursor-not-allowed">
+        <span *ngIf="isSaving" class="mr-2">
+          <svg class="inline w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+            </path>
+          </svg>
+        </span>
+        {{ isEditing ? 'Actualizar' : 'Guardar' }}
+      </button>
+    </div>
+  </form>
+</div>

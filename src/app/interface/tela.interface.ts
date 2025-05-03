@@ -4,7 +4,7 @@ export interface Tela {
   partida: string;
   os: string;
   proveedor: string;
-  fechaIngreso: string; // Formato ISO para fechas
+  fechaIngreso: string; 
   cliente: string;
   marca: string;
   op: string;
@@ -14,7 +14,6 @@ export interface Tela {
   cantRolloIngresado: number;
   pesoIngresado: number;
   stockReal: number;
-  // Nuevos campos
   estado: string;
   almacen: string;
   fechaCreacion: string;
