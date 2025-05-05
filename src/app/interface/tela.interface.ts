@@ -48,7 +48,7 @@ export interface TelaFiltroDTO {
   descripcion?: string;
   os?: string;
   partida?: string;
-  // Nuevos campos
+  tipoTela: string;
   estado?: string;
   almacen?: string;
 }

@@ -50,7 +50,6 @@
         No hay datos disponibles para mostrar estadísticas.
       </div>
 
-      <!-- Contenedor de gráficos - Actualizado para manejar todos los criterios -->
       <!-- Contenedor de gráficos -->
       <div *ngIf="!cargandoEstadisticas && estadisticas.length > 0" class="grid grid-cols-1 gap-6">
         <div class="p-4 border rounded-lg">
@@ -95,6 +94,14 @@
               <td class="px-4 py-2 text-sm text-gray-900">{{ item.totalRollos }}</td>
               <td class="px-4 py-2 text-sm text-gray-900">{{ item.totalPeso | number:'1.2-2' }}</td>
               <td class="px-4 py-2 text-sm text-gray-900">{{ item.stockTotal | number:'1.2-2' }}</td>
+            </tr>
+            <!-- Fila de totales -->
+            <tr class="border-b bg-gray-100 font-bold">
+              <td class="px-4 py-2 text-sm text-gray-900">TOTAL</td>
+              <td class="px-4 py-2 text-sm text-gray-900">{{ calcularTotalColumna('cantidadTelas') }}</td>
+              <td class="px-4 py-2 text-sm text-gray-900">{{ calcularTotalColumna('totalRollos') }}</td>
+              <td class="px-4 py-2 text-sm text-gray-900">{{ calcularTotalColumna('totalPeso') | number:'1.2-2' }}</td>
+              <td class="px-4 py-2 text-sm text-gray-900">{{ calcularTotalColumna('stockTotal') | number:'1.2-2' }}</td>
             </tr>
           </tbody>
         </table>

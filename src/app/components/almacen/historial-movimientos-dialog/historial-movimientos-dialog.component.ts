@@ -1,4 +1,3 @@
-// src/app/features/inventarios/dialogs/historial-movimientos-dialog/historial-movimientos-dialog.component.ts
 import { Component, Inject, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -32,7 +31,6 @@ export class HistorialMovimientosDialogComponent implements OnInit {
     private movimientoTelaService: MovimientoTelaService,
     private salidaCorteService: SalidaCorteService,
     private datePipe: DatePipe
-    // Eliminar las inyecciones de 'MAT_DIALOG_DATA' y 'MatDialogRef'
   ) {
     // Inicializar las propiedades
     this.data = { telaId: 0 };
@@ -52,10 +50,12 @@ export class HistorialMovimientosDialogComponent implements OnInit {
 
     forkJoin({
       movimientos: this.movimientoTelaService.obtenerHistorialTela(this.telaId),
+      salidas: this.salidaCorteService.obtenerSalidasPorTela(this.telaId)
 
     }).subscribe({
       next: (resultado) => {
         this.movimientos = resultado.movimientos;
+        this.salidas = resultado.salidas;
         this.combinarHistorial();
         this.loading = false;
       },
@@ -85,7 +85,7 @@ export class HistorialMovimientosDialogComponent implements OnInit {
     // Combinar salidas
     const salidasFormateadas = this.salidas.map(s => ({
       id: s.id,
-      fecha: new Date(s.fechaSalida),
+      fecha: this.crearFechaSegura(s.fechaSalida),
       tipo: 'SALIDA',
       subtipo: 'SALIDA_CORTE',
       origen: 'ALMACEN_PRINCIPAL',
